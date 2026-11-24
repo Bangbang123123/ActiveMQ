@@ -1,31 +1,31 @@
 from proton.utils import BlockingConnection
 
 def run_consumer():
-    # URL de conexão AMQP com o ActiveMQ Artemis
+    # Endereços de conexão
     url = "amqp://admin:admin@localhost:5672"
-    
-    # Endereço multicast correspondente ao produtor
     address = "queue://test-message"
 
-    print("Conectando ao ActiveMQ para escutar mensagens...")
+    # Criação da conexão
     connection = BlockingConnection(url)
-    
-    # Cria o receiver apontando para o tópico/multicast
     receiver = connection.create_receiver(address)
 
-    print("Aguardando mensagens... (Pressione Ctrl+C para parar)\n")
+    print("Pressione Ctrl+C para parar de receber mensagens\n\n")
 
     try:
+        # Roda o programa até o usuário pausar com ctrl+c
         while True:
+            # Recebe a mensagem
             message = receiver.receive()
             
             print(f"[<] Mensagem recebida: '{message.body}'")
             print(f"    Assunto: {message.subject}\n")
 
+            # Tira a mensagem do buffer
             receiver.accept()
     except KeyboardInterrupt:
         print("\nEncerrando o consumidor...")
     finally:
+        # Fechamento da conexão
         connection.close()
         print("Conexão fechada.")
 
