@@ -8,7 +8,7 @@ def run_producer():
     
     # Endereço ajustado para o Artemis reconhecer como multicast (tópico)
     # Ou você pode usar apenas "test-message" se o endereço já estiver criado no broker
-    address = "multicast://test-message"
+    address = "queue://test-message"
 
     print("Conectando ao ActiveMQ via AMQP...")
     connection = BlockingConnection(url)
@@ -17,21 +17,21 @@ def run_producer():
     print("Iniciando o envio de 5 mensagens (1 por minuto)...")
 
     for i in range(1, 6):
-        corpo_msg = f"Mensagem AMQP número {i} enviada em tempo real."
+        corpo_msg = f"Mensagem número {i}"
         
         # Criando a mensagem com opção persistente
         message = Message(
             body=corpo_msg,
-            durable=True,
-            subject="NotificacaoImportante"
+            durable=False,
+            subject="NotificacaoTeste"
         )
 
         sender.send(message)
-        print(f"[>] Enviado e Persistido: '{corpo_msg}'")
+        print(f"[>] Enviado: '{corpo_msg}'")
 
         if i < 5:
-            print("Aguardando 1 minuto para a próxima mensagem...\n")
-            time.sleep(60)
+            print("Aguardando 10 segundos para a próxima mensagem...\n")
+            time.sleep(10)
 
     connection.close()
     print("Todas as 5 mensagens foram enviadas com sucesso!")

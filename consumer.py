@@ -5,7 +5,7 @@ def run_consumer():
     url = "amqp://admin:admin@localhost:5672"
     
     # Endereço multicast correspondente ao produtor
-    address = "multicast://test-message"
+    address = "queue://test-message"
 
     print("Conectando ao ActiveMQ para escutar mensagens...")
     connection = BlockingConnection(url)
@@ -17,17 +17,12 @@ def run_consumer():
 
     try:
         while True:
-            # Aguarda e recebe a próxima mensagem do broker
-            event = receiver.receive()
-            message = event.message
+            message = receiver.receive()
             
             print(f"[<] Mensagem recebida: '{message.body}'")
-            print(f"    Assunto (Subject): {message.subject}")
-            print("-" * 40)
-            
-            # Confirma o recebimento da mensagem (Acknowledge)
-            event.delivery.settle()
-            
+            print(f"    Assunto: {message.subject}\n")
+
+            receiver.accept()
     except KeyboardInterrupt:
         print("\nEncerrando o consumidor...")
     finally:
